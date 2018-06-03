@@ -57,6 +57,16 @@ namespace foo {
 		uint32_t orig_len;       /* actual length of packet */
 	}__attribute__((packed));
 
+	struct btle_hdr {
+		uint8_t rf_chan;
+		uint8_t sig_power;
+		uint8_t noise_power;
+		uint8_t access_addr_offenses;
+		uint32_t access_addr_ref;
+		uint16_t flags;
+		uint32_t access_addr;
+	}__attribute__((packed));
+
 	struct radiotap_hdr {
 		uint16_t version;
 		uint16_t hdr_length;

@@ -25,7 +25,8 @@ namespace foo {
 
 enum LinkType {
 	WIFI = 127,
-	ZIGBEE = 195
+	ZIGBEE = 195,
+	BTLE = 256,
 };
 
 class FOO_API wireshark_connector : virtual public gr::block

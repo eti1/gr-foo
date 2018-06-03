@@ -19,6 +19,10 @@
 			<name>ZigBee</name>
 			<key>195</key>
 		</option>
+		<option>
+			<name>BTLE</name>
+			<key>256</key>
+		</option>
 	</param>
 
 	<param>

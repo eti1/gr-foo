@@ -139,6 +139,52 @@ wireshark_connector_impl::handle_pdu(pmt::pmt_t pdu) {
 		offset += sizeof(pcap_hdr);
 		break;
 	}
+	case BTLE: {
+		uint32_t btaddr, btaddrerr, btchan;
+		pmt::pmt_t btchan_, btaddr_, btaddrerr_, dict;
+		dict = pmt::car(pdu);
+		btchan_ = pmt::dict_ref(dict, pmt::mp("channel"), pmt::PMT_NIL);
+		btaddr_ = pmt::dict_ref(dict, pmt::mp("addr"), pmt::PMT_NIL);
+		btaddrerr_ = pmt::dict_ref(dict, pmt::mp("addr_errors"), pmt::PMT_NIL);
+
+
+		d_msg = reinterpret_cast<char*>(std::malloc(
+				len + sizeof(pcap_hdr) + sizeof(btle_hdr)));
+
+		if(!(pmt::is_uint64(btaddr_)
+		&& pmt::is_uint64(btaddrerr_)
+		&& pmt::is_uint64(btchan_)
+		)){
+			printf("Invalid btle message (%d %d %d)"
+				, pmt::is_uint64(btaddr_)
+				, pmt::is_uint64(btaddrerr_)
+				, pmt::is_uint64(btchan_));
+			d_msg_len = 0;
+			return;
+		}
+		printf("Valid btle message, len = %d\n", len);
+		btaddr = pmt::to_uint64(btaddr_);
+		btaddrerr = pmt::to_uint64(btaddrerr_);
+		btchan = pmt::to_uint64(btchan_);
+
+		pcap_hdr *hdr = reinterpret_cast<pcap_hdr*>(d_msg);
+		hdr->ts_sec   = t.tv_sec;
+		hdr->ts_usec  = t.tv_usec;
+		hdr->incl_len = len + sizeof(btle_hdr);
+		hdr->orig_len = len + sizeof(btle_hdr);
+		offset += sizeof(pcap_hdr);
+
+		btle_hdr *bhdr;
+		bhdr = reinterpret_cast<btle_hdr*>(d_msg+offset);
+		bhdr->rf_chan = btchan;
+		bhdr->sig_power = 0;
+		bhdr->noise_power = 0;
+		bhdr->access_addr_offenses = btaddrerr;
+		bhdr->flags = 0;
+		bhdr->access_addr = bhdr->access_addr = btaddr;
+
+		offset += sizeof(btle_hdr);
+	}
 	}
 
 	memcpy(d_msg + offset, buf, len);
