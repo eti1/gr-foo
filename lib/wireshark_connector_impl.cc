@@ -155,14 +155,10 @@ wireshark_connector_impl::handle_pdu(pmt::pmt_t pdu) {
 		&& pmt::is_uint64(btaddrerr_)
 		&& pmt::is_uint64(btchan_)
 		)){
-			printf("Invalid btle message (%d %d %d)"
-				, pmt::is_uint64(btaddr_)
-				, pmt::is_uint64(btaddrerr_)
-				, pmt::is_uint64(btchan_));
+			/* This should not happen */
 			d_msg_len = 0;
 			return;
 		}
-		printf("Valid btle message, len = %d\n", len);
 		btaddr = pmt::to_uint64(btaddr_);
 		btaddrerr = pmt::to_uint64(btaddrerr_);
 		btchan = pmt::to_uint64(btchan_);
