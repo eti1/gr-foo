@@ -56,7 +56,7 @@ channel_model_impl::channel_model_impl(double noise_voltage,
     d_taps.push_back(0);
     }
 
-    d_timing_offset = filter::mmse_resampler_cc::make(0, epsilon);
+    //d_timing_offset = filter::mmse_resampler_cc::make(0, epsilon);
 
     d_multipath = filter::fir_filter_ccc::make(1, d_taps);
 
@@ -67,8 +67,9 @@ channel_model_impl::channel_model_impl(double noise_voltage,
 						frequency_offset, 1.0, 0.0);
     d_mixer_offset = blocks::multiply_cc::make();
 
-    connect(self(), 0, d_timing_offset, 0);
-    connect(d_timing_offset, 0, d_multipath, 0);
+    //connect(self(), 0, d_timing_offset, 0);
+    //connect(d_timing_offset, 0, d_multipath, 0);
+    connect(self(), 0, d_multipath, 0);
     connect(d_multipath, 0, d_mixer_offset, 0);
     connect(d_freq_offset, 0, d_mixer_offset, 1);
     connect(d_mixer_offset, 0, d_noise_adder, 1);
@@ -76,7 +77,7 @@ channel_model_impl::channel_model_impl(double noise_voltage,
     connect(d_noise_adder, 0, self(), 0);
 
     if (block_tags) {
-    d_timing_offset->set_tag_propagation_policy(gr::block::TPP_DONT);
+    //d_timing_offset->set_tag_propagation_policy(gr::block::TPP_DONT);
     }
 }
 
@@ -109,7 +110,7 @@ channel_model_impl::set_taps(const std::vector<gr_complex> &taps)
 void
 channel_model_impl::set_timing_offset(double epsilon)
 {
-    d_timing_offset->set_resamp_ratio(epsilon);
+    //d_timing_offset->set_resamp_ratio(epsilon);
 }
 
 double
@@ -133,7 +134,8 @@ channel_model_impl::taps() const
 double
 channel_model_impl::timing_offset() const
 {
-    return d_timing_offset->resamp_ratio();
+    //return d_timing_offset->resamp_ratio();
+	return 0;
 }
 
 } /* namespace channels */
